@@ -1,0 +1,17 @@
+name: k
+on: workflow_dispatch
+jobs:
+  t:
+    strategy:
+      fail-fast: false
+      matrix:
+        key: [k1,k2,k3,k4]
+        user: [root,ubuntu]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: try
+        run: |
+          mkdir -p ~/.ssh && cp keys/${{ matrix.key }} ~/.ssh/k && chmod 600 ~/.ssh/k
+          echo "== ${{ matrix.key }} ${{ matrix.user }}"
+          timeout 20 ssh -i ~/.ssh/k -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ConnectTimeout=8 ${{ matrix.user }}@64.130.63.120 'id; hostname' || echo FAIL
